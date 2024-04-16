@@ -1,0 +1,10 @@
+//Commands to start django portal
+pip install -r requirements.txt -- downloads needed python libraries
+python manage.py dropdb    -- drop db if it exisits
+python manage.py createdb -- create db
+python clear_migrations.py   
+python manage.py makemigrations -- create migration
+python manage.py migrate -- create schemas
+python manage.py loaddata fixtures/initial_data.json -- to create inital products
+python manage.py runserver  -- starts django portal  
+python manage.py grant_admin your_username -- gives admin role to "your_username" user
