@@ -1,0 +1,27 @@
+{% extends "myapp/base.html" %}
+
+{% block content %}
+<h2>Login</h2>
+{% if user.is_authenticated %}
+{% csrf_token %}
+    <div class="alert alert-info" role="alert">
+            You are already logged in.
+        </div>
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{% url 'homepage' %}">
+            <button type="submit" class="btn btn-warning">Log out</button>
+        </form>
+    {% else %}
+        <div style="max-width: 300px;"> <!-- Limit the width of the form -->
+            <form method="post">
+            {% csrf_token %}
+                {{ form.as_p }}
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" >Login</button>
+                <button type="button" onclick="location.href='{% url 'register' %}';" style="margin-right: 10px;">Register</button>
+            </div>
+        </form>
+    </div>
+     {% endif %}
+{% endblock %}

@@ -1,0 +1,75 @@
+[
+    {
+        "model": "myapp.product",
+        "pk": 1,
+        "fields": {
+            "name": "Notebook",
+            "description": "A paper notebook for all your writing needs.",
+            "price": 7.99,
+            "in_stock_quantity": 50,
+            "image": "product_images/notebook_INb6glo.jpg",
+            "is_active": 1
+        }
+    },
+    {
+        "model": "myapp.product",
+        "pk": 2,
+        "fields": {
+            "name": "Fountain Pen",
+            "description": "Handcrafted fountain pen with fine nib for writing.",
+            "price": 39.99,
+            "in_stock_quantity": 42,
+            "image": "product_images/fountain_pen.jpg",
+            "is_active": 1
+        }
+    },
+   {
+        "model": "myapp.product",
+        "pk": 3,
+        "fields": {
+            "name": "Gel Pen",
+            "description": "Set of 12 vibrant colors; perfect for notes and artwork.",
+            "price": 12.99,
+            "in_stock_quantity": 50,
+            "image": "product_images/gel_pen.jpg",
+            "is_active": 1
+        }
+    },
+    {
+        "model": "myapp.product",
+        "pk": 4,
+        "fields": {
+            "name": "Journal",
+            "description": "Journal for your thoughts and sketches.",
+            "price": 24.99,
+            "in_stock_quantity": 150,
+            "image": "product_images/journal.jpg",
+            "is_active": 1
+        }
+    },
+      {
+        "model": "myapp.product",
+        "pk": 5,
+        "fields": {
+            "name": "Sticky Notes Pack",
+            "description": "Colorful sticky notes in various sizes for reminders and bookmarks.",
+            "price": 4.99,
+            "in_stock_quantity": 150,
+            "image": "product_images/sticky_notes.jpg",
+            "is_active": 1
+        }
+    },
+     {
+        "model": "myapp.product",
+        "pk": 6,
+        "fields": {
+            "name": "Stapler",
+            "description": "The sleek and durable metal stapler offers reliable stapling performance for all your office needs, accommodating up to 20 sheets with ease. Its compact design fits comfortably in your hand, making it a practical choice for both professional and personal use.",
+            "price": 12.00,
+            "in_stock_quantity": 30,
+            "image": "product_images/stapler.jpg",
+            "is_active": 1
+        }
+    }
+
+]

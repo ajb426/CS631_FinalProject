@@ -1,0 +1,70 @@
+{% extends 'myapp/base.html' %}
+
+{% block content %}
+<!-- Page Title -->
+<h2>Checkout</h2>
+<!-- Check if there are items in the cart to display -->
+{% if items_with_totals %}
+    <table>
+        <tr>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Total</th>
+        </tr>
+        {% for entry in items_with_totals %}
+        <tr>
+            <!-- Display the product name, quantity, unit price, and total price -->
+            <td>{{ entry.item.product.name }}</td>
+            <td>{{ entry.item.quantity }}</td>
+            <td>${{ entry.item.product.price }}</td>
+            <td>${{ entry.total_price }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <!-- Display the total price for all items in the cart -->
+    <p><strong>Total Price for All Items: ${{ total_price_for_all_items }}</strong></p>
+{% else %}
+    <!-- Message shown if the cart is empty -->
+    <p>Your cart is empty.</p>
+{% endif %}
+<!-- Form for placing an order -->
+<form method="post">
+    {% if items_with_totals %}
+        {% csrf_token %}
+        <!-- Dropdown to choose a payment method -->
+        <label for="PaymentInfo">Choose a payment method:</label>
+        <select name="paymentInfo" id="PaymentInfo">
+            {% for payment in paymentInfo %}
+            <!-- Option for each available payment method -->
+                <option value="{{ payment.payment_info_id }}">{{ payment.card_nickname }}</option>
+            {% endfor %}
+        </select>
+        <!-- Dropdown to choose a shipping address -->
+        <label for="shippingAddress">Choose a Shipping Address</label>
+            <select name="shippingAddress" id="shippingAddress">
+            {% for address in shippingAddress %}
+                <!-- Option for each available shipping address -->
+                <option value="{{ address.shipping_address_id }}">{{ address.nickname }}</option>
+            {% endfor %}
+        </select>
+        <!-- Button to submit the order -->
+        <button type="submit">Place Order</button>
+    {% else %}
+        {% csrf_token %}
+        <!-- Warning message if there are no items to checkout -->
+        <div class="alert alert-warning" role="alert">
+        You cannot place an order with an empty cart.
+        </div>
+    {% endif %}
+</form>
+
+<!-- Section for displaying messages from Django's messaging framework -->
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li class="{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}

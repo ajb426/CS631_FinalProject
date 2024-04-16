@@ -1,0 +1,195 @@
+{% extends "myapp/base.html" %}
+{% block content %}
+<!-- Load jQuery library for AJAX and DOM manipulation -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<div>
+    <h3>Edit Shipping Address</h3>
+    <!-- Dropdown to select an existing address or add a new one -->
+    <select id="addressSelect" onchange="updateAddressForm();">
+        <option value="">Add New Address</option>
+        {% for address in user_addresses %}
+            <option value="{{ address.shipping_address_id }}">{{ address.nickname }}</option>
+        {% endfor %}
+    </select>
+
+    <!-- Form for adding or editing shipping addresses -->
+    <form id="addressForm" method="post" action="{% url 'profile' %}">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_shipping_address">
+        <input type="hidden" id="addressId" name="shipping_address_id" value="">
+        <input type="text" id="street" name="street" placeholder="Street">
+        <input type="text" id="city" name="city" placeholder="City">
+        <select id="state" name="state">
+            <option value="">Select State</option>
+                {% for state_code, state_name in shipping_form.fields.state.choices %}
+            <option value="{{ state_code }}">{{ state_name }}</option>
+            {% endfor %}
+        </select>
+        <select id="country" name="country">
+            <option value="">Select Country</option>
+                {% for country_code, country_name in shipping_form.fields.country.choices %}
+            <option value="{{ country_code }}">{{ country_name }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" id="postal_code" name="postal_code" placeholder="Postal Code">
+        <input type="text" id="nickname" name="nickname" placeholder="Nickname">
+        <button type="submit">Save Address</button>
+    </form>
+</div>
+
+<h3>Edit Payment Details</h3>
+<!-- Dropdown to select existing payment methods or add a new one -->
+<select id="paymentSelect" onchange="updatePaymentDetailsForm();">
+        <option value="">Add New Payment Option</option>
+        {% for payment in user_payments %}
+            <option value="{{ payment.payment_info_id }}">{{payment.card_nickname}}</option>
+        {% endfor %}
+</select>
+<!-- Form for adding or editing payment details -->
+<form id="paymentDetailsForm" method="post" action="{% url 'profile' %}">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_payment_details">
+        <input type="hidden" id="payment_info_id" name="payment_info_id" value="">
+        <select id="card_type" name="card_type">
+            <option value="">Select Card Type</option>
+                {% for card_type, card_type_2 in payment_form.fields.card_type.choices %}
+            <option value="{{ card_type }}">{{ card_type_2 }}</option>
+            {% endfor %}
+        </select>
+        <select id="payment_method" name="payment_method">
+            <option value="">Payment Method Type</option>
+                {% for payment_method_type, payment_method in payment_form.fields.payment_method.choices %}
+            <option value="{{ payment_method_type }}">{{ payment_method }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" id="card_number" name="card_number" placeholder="Card Number" maxlength="16" pattern="^(\d{4}[-\s]?){3}\d{4}$" >
+        <input type="text" id="cvv" name="cvv" placeholder="CVV" maxlength="4"  pattern="^\d{3,4}$">
+        <input type="text" id="card_nickname" name="card_nickname" placeholder="Nickname" maxlength="20">
+        <button type="submit">Save Payment Method</button>
+    </form>
+
+
+<h2>Order History</h2>
+<!-- Loop through all orders and display order details -->
+{% for order in orders %}
+    <h3>Order #{{ order.order_id }} - {{ order.order_status }}</h3>
+    <p>Total Price: ${{ order.total_price }}</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price per Item</th>
+                <th>Total Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order.order_items.all %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>${{ item.price }}</td>
+                   <td>${{ item.total_price }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% empty %}
+    <p>You have no orders.</p>
+{% endfor %}
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li class="{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+
+
+
+
+
+<script>
+    // JavaScript function to update the address form based on selected address
+    function updateAddressForm() {
+        var addressDropdown = document.getElementById('addressSelect');
+        var actionInput = document.querySelector('input[name="action"]');
+        var addressIdInput = document.getElementById('addressId');
+
+        // Clear form fields function
+        function clearFormFields() {
+            document.getElementById('nickname').value = '';
+            document.getElementById('street').value = '';
+            document.getElementById('city').value = '';
+            document.getElementById('state').value='';
+            document.getElementById('country').value='';
+            document.getElementById('postal_code').value='';
+        }
+
+        // Check if the dropdown is set to add a new address
+        if (!addressDropdown.value) {
+            actionInput.value = 'add_shipping_address';
+            addressIdInput.value = '';
+            clearFormFields(); // Clear all form fields
+        } else {
+            // Set form to edit mode and fill fields with the selected address's details
+            actionInput.value = 'edit_shipping_address';
+            addressIdInput.value = addressDropdown.value;
+
+            // Example AJAX call to fetch and populate the form with address details
+            fetch(`/ajax/load-address/?address_id=${addressDropdown.value}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('nickname').value = data.nickname;
+                    document.getElementById('street').value = data.street;
+                    document.getElementById('city').value = data.city;
+                    document.getElementById('state').value= data.state;
+                    document.getElementById('country').value= data.country;
+                    document.getElementById('postal_code').value= data.postal_code;
+                })
+                .catch(error => console.error('Error fetching address details:', error));
+        }
+    }
+    // JavaScript function to update the payment details form based on selected payment method
+    function updatePaymentDetailsForm() {
+        var paymentDropdown = document.getElementById('paymentSelect');
+        var actionInput = document.querySelector('input[name="action"]');
+        var payment_method_id_input = document.getElementById('payment_info_id');
+
+        // Clear form fields function
+        function clearFormFields() {
+            document.getElementById('card_nickname').value = '';
+            document.getElementById('card_type').value = '';
+            document.getElementById('payment_method').value = '';
+            document.getElementById('card_number').value='';
+            document.getElementById('cvv').value='';
+        }
+
+        // Check if the dropdown is set to add a new address
+        if (!paymentDropdown.value) {
+            actionInput.value = 'add_payment_details';
+            payment_info_id.value = '';
+            clearFormFields(); // Clear all form fields
+        } else {
+            // Set form to edit mode and fill fields with the selected address's details
+            actionInput.value = 'edit_payment_details';
+            payment_method_id_input.value = paymentDropdown.value;
+
+            // Example AJAX call to fetch and populate the form with address details
+            fetch(`/ajax/load-paymentDetail/?paymentMethod_id=${paymentDropdown.value}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('card_nickname').value = data.nickname;
+                    document.getElementById('card_type').value = data.card_type;
+                    document.getElementById('payment_method').value = data.payment_method;
+                    document.getElementById('card_number').value= data.card_number;
+                    document.getElementById('cvv').value= data.cvv;
+                })
+                .catch(error => console.error('Error fetching address details:', error));
+        }
+    }
+
+</script>
+{% endblock %}

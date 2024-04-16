@@ -1,0 +1,57 @@
+<!-- shop/templates/shop/homepage.html -->
+
+{% extends 'myapp/base.html' %}
+{% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My E-Commerce Site</title>
+</head>
+<body>
+    <header>
+        <h1>Welcome to My E-Commerce Site</h1>
+    </header>
+    <main>
+        <!-- Main content area where the featured products are displayed -->
+        <h2>Featured Products</h2>
+        <!-- Table for displaying product details -->
+        <table>
+            <tr>
+                <th>Product Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>In Stock Quantity</th>
+            </tr>
+            <!-- Loop through each product passed to the template -->
+            {% for product in products %}
+            <tr>
+                <!-- Only display products that are in stock -->
+                {% if product.in_stock_quantity > 0 %}
+                    <td><a href="{% url 'product_detail' product.product_id %}">{{ product.name }}</a></td>
+                    <td style="max-width: 600px;">{{ product.description }} </td>
+                    <td>${{ product.price }}</td>
+                    <td>{{ product.in_stock_quantity }}</td>
+                    <td>
+                        <form action="{% url 'homepage' %}" method="post">
+                            {% csrf_token %}
+                            <label for="quantity-{{ product.id }}">Quantity:</label>
+                            <input type="hidden" name="product_id" value="{{ product.product_id }}">
+                            <input type="number" id="quantity-{{ product.id }}" name="quantity" min="1" value="1" style="width: 50px;">
+                            <button type="submit">Add to Cart</button>
+                        </form>
+                    </td>
+               {% endif %}
+            </tr>
+            {% endfor %}
+        </table>
+        <div class="login-status">
+            <!-- Check if the user is authenticated and display appropriate message -->
+        {% if user.is_authenticated %}
+            <p>Welcome back, {{ user.get_username }}! You are logged in.</p>
+        {% else %}
+            <p>You are not logged in.</p>
+        {% endif %}
+    </div>
+    </main>
+</body>
+{% endblock %}

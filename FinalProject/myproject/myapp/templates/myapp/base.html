@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MySite</title>
+</head>
+<body>
+    <!-- Navigation bar for the website -->
+    <div>
+        <nav>
+            <!-- Link to various pages in site -->
+            <a href="{% url 'homepage' %}">Home</a>
+            <a href="{% url 'login' %}">Login</a>
+            <a href="{% url 'checkout_view' %}">Checkout</a>
+            <a href="{% url 'view_cart' %}">View Cart</a>
+            <a href="{% url 'profile' %}">Profile</a>
+            {% if request.user.role == 'admin' %}
+            <a href="{% url 'custom_admin' %}">Admin Page</a>
+        {% endif %}
+        </nav>
+    </div>
+    {% block content %}
+    {% endblock %}
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!-- view_cart.html -->
+{% extends "myapp/base.html" %}
+
+{% block content %}
+<h2>Your Cart</h2>
+<!-- Conditionally display the cart contents only if there are items in the cart -->
+{% if cart_items %}
+<!-- Table to display cart items -->
+    <table>
+        <tr>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Total Price</th>
+            <th>Increase Quantity</th>
+            <th>Remove From Cart</th>
+        </tr>
+        {% for item in cart_items %}
+        <tr>
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>${{ item.product.price }}</td>
+            <td>${{ item.total_price }}</td>
+            <td>
+                <!-- Form to add more of the same item to the cart -->
+                <form method="post" action="{% url 'view_cart' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="product_id" value="{{ item.product.product_id }}">
+                    <input type="number" name="quantity" value="1" min="1" style="width: 50px;">
+                    <input type="submit" name="add_to_cart" value="add to cart">
+                </form>
+              </td>
+            <td>
+                <!-- Form to remove the item or decrease the quantity from the cart -->
+            <form method="post" action="{% url 'view_cart' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="product_id" value="{{ item.product.product_id }}">
+                     <input type="number" name="quantity" value="1" min="1" style="width: 50px;">
+                    <input type="submit" name="remove_item_from_cart" value="remove item from cart">
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>Your cart is empty.</p>
+{% endif %}
+
+{% endblock %}

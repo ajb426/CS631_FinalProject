@@ -1,0 +1,84 @@
+{% extends 'myapp/base.html' %}
+
+{% block content %}
+<h2>Add New Product</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="hidden" name="action" value="add_product">
+    <button type="submit">Add Product</button>
+</form>
+<!-- Section to display and manage product removal or status change -->
+<h2>Remove Product</h2>
+{% for product in products %}
+<table>
+<tr>
+    <th>Product Name</th>
+    <th>Active Status</th>
+</tr>
+    <td>{{ product.name }}</td>
+    <td> {% if product.is_active == 1 %}
+            Active
+        {% else %}
+            Inactive
+        {% endif %}
+    </td>
+    <td>
+        <!-- Form to disable the product -->
+       <form action="{% url 'custom_admin' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="product_id" value="{{ product.product_id }}">
+           <input type="hidden" name="action" value="remove_product">
+            <button type="submit" onclick="return confirm('Are you sure you want to disable this product?');">
+                Disable
+            </button>
+        </form>
+    </td>
+    <td><!-- Form to enable the product -->
+       <form action="{% url 'custom_admin' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="product_id" value="{{ product.product_id }}">
+           <input type="hidden" name="action" value="enable_product">
+            <button type="submit" onclick="return confirm('Are you sure you want to enable this product?');">
+                Enable
+            </button>
+        </form>
+    </td>
+</tr>
+    {% endfor %}
+</table>
+<!-- Section for managing user roles, specifically granting admin rights -->
+<h2>Grant Admin</h2>
+{% for user in users %}
+<table>
+    <tr>
+        <th>Username</th>
+        <th>Role</th>
+    </tr>
+    <td>{{user.username}}</td>
+    <td>{{user.role}}</td>
+    <td>{% if user.role == 'admin' %}
+         <!-- Form to revoke admin rights -->
+            <form action="{% url 'custom_admin' %}" method="post">
+            {% csrf_token %}
+                <input type="hidden" name="user_id" value="{{ user.user_id }}">
+                <input type="hidden" name="action" value="demote_admin">
+                <button type="submit" onclick="return confirm('Are you sure you want to revoke this user's admin rights?');">
+                Revoke Admin
+                </button>
+            </form>
+        {% else %}
+        <!-- Form to grant admin rights -->
+            <form action="{% url 'custom_admin' %}" method="post">
+            {% csrf_token %}
+                <input type="hidden" name="user_id" value="{{ user.user_id }}">
+                <input type="hidden" name="action" value="promote_admin">
+                <button type="submit">
+                Promote Admin
+                </button>
+            </form>
+        {% endif %}
+    </td>
+    {% endfor %}
+</table>
+{% endblock %}
